@@ -8449,17 +8449,52 @@ void ggml_vec_dot_iq2_xs_q8_K(const int n, float * restrict s, const void * rest
     const __m128i m4 = _mm_set1_epi8(0xf);
     const __m128i m1 = _mm_set1_epi8(1);
     const __m128i m511 = _mm_set1_epi16(511);
-    const __m128i m127 = _mm_set1_epi16(127);
-
-    const uint64_t * signs64 = (const uint64_t *)keven_signs_q2xs;
+    const __m128i m254 = _mm_set1_epi16(-512); //0xfe00 -- the bits
 
     uint64_t aux64;
 
     // somewhat hacky, but gives a significant boost in performance
-    __m128i aux_gindex, aux_sindex;
+    __m128i aux_gindex;
     const uint16_t * gindex = (const uint16_t *)&aux_gindex;
-    const uint16_t * sindex = (const uint16_t *)&aux_sindex;
 
+    const __m256i ones = _mm256_set1_epi8(1);
+    
+    static const char block1_sign_shuffle_mask_bytes[32] = {
+        0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01,
+        0x03, 0x03, 0x03, 0x03,
+        0x03, 0x03, 0x03, 0x03,
+        0x05, 0x05, 0x05, 0x05,
+        0x05, 0x05, 0x05, 0x05,
+        0x07, 0x07, 0x07, 0x07,
+        0x07, 0x07, 0x07, 0x07
+    };
+    
+    static const char block2_sign_shuffle_mask_bytes[32] = {
+        0x09, 0x09, 0x09, 0x09,
+        0x09, 0x09, 0x09, 0x09,
+        0x0b, 0x0b, 0x0b, 0x0b,
+        0x0b, 0x0b, 0x0b, 0x0b,
+        0x0d, 0x0d, 0x0d, 0x0d,
+        0x0d, 0x0d, 0x0d, 0x0d,
+        0x0f, 0x0f, 0x0f, 0x0f,
+        0x0f, 0x0f, 0x0f, 0x0f
+    };
+    
+    static const uint8_t bit_selector_mask_bytes[32] = {
+        0x01, 0x02, 0x04, 0x08,
+        0x10, 0x20, 0x40, 0x80,
+        0x01, 0x02, 0x04, 0x08,
+        0x10, 0x20, 0x40, 0x80,
+        0x01, 0x02, 0x04, 0x08,
+        0x10, 0x20, 0x40, 0x80,
+        0x01, 0x02, 0x04, 0x08,
+        0x10, 0x20, 0x40, 0x80,
+    };
+    const __m256i bit_selector_mask = _mm256_loadu_si256((const __m256i*)bit_selector_mask_bytes);
+    const __m256i block1_sign_shuffle_mask  = _mm256_loadu_si256((const __m256i*)block1_sign_shuffle_mask_bytes);
+    const __m256i block2_sign_shuffle_mask  = _mm256_loadu_si256((const __m256i*)block2_sign_shuffle_mask_bytes);
+    
     __m256 accumf = _mm256_setzero_ps();
     for (int i = 0; i < nb; ++i) {
         const float d = GGML_FP16_TO_FP32(x[i].d) * y[i].d;
@@ -8477,12 +8512,21 @@ void ggml_vec_dot_iq2_xs_q8_K(const int n, float * restrict s, const void * rest
             const __m256i q8_1 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
             const __m256i q8_2 = _mm256_loadu_si256((const __m256i *)q8); q8 += 32;
             const __m128i q2_data = _mm_loadu_si128((const __m128i*)q2);  q2 +=  8;
+
             aux_gindex = _mm_and_si128(q2_data, m511);
-            aux_sindex = _mm_and_si128(_mm_srli_epi16(q2_data, 9), m127);
             const __m256i q2_1 = _mm256_set_epi64x(iq2xs_grid[gindex[3]], iq2xs_grid[gindex[2]], iq2xs_grid[gindex[1]], iq2xs_grid[gindex[0]]);
             const __m256i q2_2 = _mm256_set_epi64x(iq2xs_grid[gindex[7]], iq2xs_grid[gindex[6]], iq2xs_grid[gindex[5]], iq2xs_grid[gindex[4]]);
-            const __m256i s2_1 = _mm256_set_epi64x(signs64[sindex[3]], signs64[sindex[2]], signs64[sindex[1]], signs64[sindex[0]]);
-            const __m256i s2_2 = _mm256_set_epi64x(signs64[sindex[7]], signs64[sindex[6]], signs64[sindex[5]], signs64[sindex[4]]);
+
+            const __m128i sign_encodings = _mm_and_si128(q2_data, m254);
+            const __m128i sign_bits = _mm_xor_si128(sign_encodings, _mm_srli_epi16(sign_encodings, 1));
+            const __m256i sign_bits_256 = _mm256_set_m128i(sign_bits, sign_bits); // It would be better if we could just alias a XMM and YMM register here..
+            const __m256i block1_signs_bitmixed = _mm256_shuffle_epi8(sign_bits_256,block1_sign_shuffle_mask);
+            const __m256i block2_signs_bitmixed = _mm256_shuffle_epi8(sign_bits_256,block2_sign_shuffle_mask);
+            __m256i s2_1 = _mm256_cmpeq_epi8(_mm256_and_si256(block1_signs_bitmixed,bit_selector_mask), _mm256_setzero_si256());
+            __m256i s2_2 = _mm256_cmpeq_epi8(_mm256_and_si256(block2_signs_bitmixed,bit_selector_mask), _mm256_setzero_si256());
+            s2_1 = _mm256_or_si256(s2_1, ones); // We want 1s, not 0s, to mean "positive"
+            s2_2 = _mm256_or_si256(s2_2, ones);
+
             const __m256i q8s_1 = _mm256_sign_epi8(q8_1, s2_1);
             const __m256i q8s_2 = _mm256_sign_epi8(q8_2, s2_2);
             const __m256i dot1  = _mm256_maddubs_epi16(q2_1, q8s_1);

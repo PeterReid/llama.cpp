@@ -6,7 +6,7 @@
 #include "ggml.h"
 #include "ggml-alloc.h"
 #include "ggml-backend.h"
-
+#include <sys/stat.h>
 #ifdef GGML_USE_CUBLAS
 #  include "ggml-cuda.h"
 #elif defined(GGML_USE_CLBLAST)
@@ -2536,8 +2536,10 @@ struct llama_model_loader {
                     }
                     mmap_used_first = std::min(mmap_used_first, offs);
                     mmap_used_last  = std::max(mmap_used_last,  offs + ggml_nbytes(cur));
+                    printf("Mapped type %d\n", cur->type);
                 } else {
                     ggml_backend_tensor_set(cur, (uint8_t *) mapping->addr + offs, 0, ggml_nbytes(cur));
+                    printf("Mapped type (no-buf_mmap) %d\n", cur->type);
                 }
             } else {
                 if (ggml_backend_buffer_is_host(cur->buffer)) {
@@ -3869,6 +3871,20 @@ static bool llm_load_tensors(
     return true;
 }
 
+typedef struct {
+    ggml_fp16_t d;
+    uint16_t qs[QK_K/8];
+    uint8_t  scales[QK_K/32];
+} llama_block_iq2_xs;
+static_assert(sizeof(llama_block_iq2_xs) == sizeof(ggml_fp16_t) + QK_K/8*sizeof(uint16_t) + QK_K/32, "wrong iq2_xs block size/padding");
+
+
+static const uint8_t framblify_lookup[127] = {0x55, 0x2a, 0x2b, 0x54, 0x29, 0x56, 0x57, 0x28, 0x2d, 0x52, 0x53, 0x2c, 0x51, 0x2e, 0x2f, 0x50, 0x25, 0x5a, 0x5b, 0x24, 0x59, 0x26, 0x27, 0x58, 0x5d, 0x22, 0x23, 0x5c, 0x21, 0x5e, 0x5f, 0x20, 0x35, 0x4a, 0x4b, 0x34, 0x49, 0x36, 0x37, 0x48, 0x4d, 0x32, 0x33, 0x4c, 0x31, 0x4e, 0x4f, 0x30, 0x45, 0x3a, 0x3b, 0x44, 0x39, 0x46, 0x47, 0x38, 0x3d, 0x42, 0x43, 0x3c, 0x41, 0x3e, 0x3f, 0x40, 0x15, 0x6a, 0x6b, 0x14, 0x69, 0x16, 0x17, 0x68, 0x6d, 0x12, 0x13, 0x6c, 0x11, 0x6e, 0x6f, 0x10, 0x65, 0x1a, 0x1b, 0x64, 0x19, 0x66, 0x67, 0x18, 0x1d, 0x62, 0x63, 0x1c, 0x61, 0x1e, 0x1f, 0x60, 0x75, 0x0a, 0x0b, 0x74, 0x09, 0x76, 0x77, 0x08, 0x0d, 0x72, 0x73, 0x0c, 0x71, 0x0e, 0x0f, 0x70, 0x05, 0x7a, 0x7b, 0x04, 0x79, 0x06, 0x07, 0x78, 0x7d, 0x02, 0x03, 0x7c, 0x01, 0x7e, 0x7f };
+
+static uint16_t fast_framblify(uint16_t x) {
+   return (x & 0x1ff) | (framblify_lookup[x>>9]<<9);
+}
+
 // Returns 0 on success, -1 on error, and -2 on cancellation via llama_progress_callback
 static int llama_model_load(const std::string & fname, llama_model & model, const llama_model_params & params) {
     try {
@@ -3897,6 +3913,95 @@ static int llama_model_load(const std::string & fname, llama_model & model, cons
         )) {
             return -2;
         }
+        
+        #if 0
+        const char *file_path = "./framblifier/mistral-instruct-7b-2.43bpw.gguf";
+
+        // Open the file
+        int fd = open(file_path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        if (fd == -1) {
+            printf("Error opening file");
+            exit(1);
+        }
+
+        // Get the current size of the file
+        struct stat file_stat;
+        if (fstat(fd, &file_stat) == -1) {
+            printf("Error getting file size");
+            exit(1);
+        }
+
+        // Memory map the file
+        char *write_file_data = (char *)mmap(NULL, file_stat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        if (write_file_data == MAP_FAILED) {
+            printf("Error mapping file to memory");
+            exit(1);
+        }
+
+        // gohere
+        int64_t modified = 0;
+        int64_t unmodified = 0;
+        int64_t weird = 0;
+        for (ggml_context * ctx : model.ctxs) {
+            for (auto * cur = ggml_get_first_tensor(ctx); cur != NULL; cur = ggml_get_next_tensor(ctx, cur)) {
+                int64_t nbytes = ggml_nbytes(cur);
+                printf("Type = %d %p bytes=%ld\n", cur->type, (const void *)cur, nbytes);
+                const char *data = (const char *)cur->data;
+                const char *mapping_root = (const char *)model.mapping->addr;
+                
+                if (cur->type == 17) {
+                    for (int dim=2; dim<GGML_MAX_DIMS; dim++) {
+                        GGML_ASSERT(cur->ne[dim]==1);
+                    }
+                    for (int b=0; b<cur->ne[1]; b++) {
+                        if (b%100==0) printf("b = %d unmodified=%ld modified=%ld weird=%ld %ld  %ld==%ld * %ld / %d\n", b, unmodified, modified, weird, cur->nb[0], cur->nb[1], sizeof(llama_block_iq2_xs), cur->ne[0], QK_K);
+                        GGML_ASSERT(cur->nb[0] == sizeof(llama_block_iq2_xs));
+                        GGML_ASSERT(cur->nb[1]*QK_K == sizeof(llama_block_iq2_xs) * cur->ne[0]);
+                        for (int a=0; a<cur->ne[0]/QK_K; a++) {
+                            const llama_block_iq2_xs *read_block = (const llama_block_iq2_xs *)(data + b*cur->nb[1] + a*cur->nb[0]);
+                            llama_block_iq2_xs modified_block = *read_block;
+                            llama_block_iq2_xs *write_block = (llama_block_iq2_xs *)(write_file_data + ((const char *)read_block - mapping_root));
+                            
+                            //printf("block: %f %f\n", ggml_fp16_to_fp32(read_block->d), ggml_fp16_to_fp32(write_block->d));
+                            for (int qi = 0; qi < QK_K/8; qi++) {
+                                modified_block.qs[qi] = fast_framblify(modified_block.qs[qi]);
+                            }
+                            int match_old = memcmp(read_block, write_block, sizeof(modified_block))==0;
+                            int match_new = memcmp(&modified_block, write_block, sizeof(modified_block))==0;
+                            if (match_old) {
+                                modified++;
+                                
+                                memcpy(write_block, &modified_block, sizeof(modified_block));
+                            } else if (match_new) {
+                                unmodified++;
+                            } else {
+                                weird++;
+                                
+                                memcpy(write_block, &modified_block, sizeof(modified_block));
+                            }
+                        }
+                    }
+                }
+                //model.tensors_by_name.emplace_back(ggml_get_name(cur), cur);
+            }
+        }
+        
+        if (msync(write_file_data, file_stat.st_size, MS_SYNC) == -1) {
+            printf("Error syncing file to disk");
+            exit(1);
+        }
+        
+        printf("Unmodified: %ld, modified: %ld, weird: %ld\n", unmodified, modified, weird);
+
+        // Unmap the file from memory
+        if (munmap(write_file_data, file_stat.st_size) == -1) {
+            printf("Error unmapping file from memory");
+            exit(1);
+        }
+
+        // Close the file descriptor
+        close(fd);
+        #endif
     } catch (const std::exception & err) {
         LLAMA_LOG_ERROR("%s: error loading model: %s\n", __func__, err.what());
         return -1;

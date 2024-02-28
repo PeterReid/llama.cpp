@@ -10992,6 +10992,37 @@ void quantize_row_iq3_xxs_reference(const float * restrict x, block_iq3_xxs * re
     quantize_row_iq3_xxs_impl(256, x, y, k, NULL);
 }
 
+static void print_iq3(block_iq3_s *b) {
+    printf("block_iq3_s {\n");
+    printf("  d = %f\n", (double)GGML_FP32_TO_FP16(b->d));
+    
+    printf("  qs =");
+    for (size_t i=0; i< sizeof(b->qs); i++) {
+        printf(" %02x", b->qs[i]);
+    }
+    printf("\n");
+    
+    printf("  qh =");
+    for (size_t i=0; i< sizeof(b->qh); i++) {
+        printf(" %02x", b->qh[i]);
+    }
+    printf("\n");
+    
+    printf("  signs =");
+    for (size_t i=0; i< sizeof(b->signs); i++) {
+        printf(" %02x", b->signs[i]);
+    }
+    printf("\n");
+    
+    printf("  scales =");
+    for (size_t i=0; i< sizeof(b->scales); i++) {
+        printf(" %02x", b->scales[i]);
+    }
+    printf("\n");
+    
+    printf("}\n");
+}
+
 static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, void * restrict vy, int n,
         const float * restrict quant_weights,
         float   * scales,
@@ -11170,6 +11201,8 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
             y[ibl].scales[ib/2] = l1 | (l2 << 4);
         }
 
+        print_iq3(&y[ibl]);
+        exit(0);
     }
 }
 

@@ -3506,70 +3506,72 @@ static const uint32_t iq3xxs_grid[256] = {
 };
 
 static const uint32_t iq3xs_grid[512] = {
-    0x04040404, 0x0404040c, 0x04040414, 0x0404042c, 0x0404043e, 0x04040c04, 0x04040c0c, 0x04040c14,
-    0x04040c24, 0x04040c34, 0x04041404, 0x0404140c, 0x0404142c, 0x04041c1c, 0x04042404, 0x04042414,
-    0x0404242c, 0x0404243e, 0x04042c0c, 0x04042c1c, 0x04043404, 0x04043414, 0x04043e0c, 0x04043e24,
-    0x04043e3e, 0x040c0404, 0x040c040c, 0x040c0414, 0x040c0424, 0x040c0c04, 0x040c0c0c, 0x040c0c2c,
-    0x040c1404, 0x040c141c, 0x040c143e, 0x040c1c0c, 0x040c1c2c, 0x040c2424, 0x040c340c, 0x040c342c,
-    0x040c3e14, 0x04140404, 0x0414040c, 0x0414042c, 0x0414043e, 0x04140c04, 0x04140c1c, 0x04140c34,
-    0x0414140c, 0x0414142c, 0x04141c04, 0x04141c24, 0x04142414, 0x0414242c, 0x0414243e, 0x04142c0c,
-    0x04142c1c, 0x04143e04, 0x04143e1c, 0x041c041c, 0x041c0c0c, 0x041c0c2c, 0x041c1404, 0x041c1414,
-    0x041c1c0c, 0x041c1c1c, 0x041c1c34, 0x041c2424, 0x041c2c04, 0x041c2c14, 0x041c343e, 0x041c3e0c,
-    0x041c3e2c, 0x04240404, 0x04240c1c, 0x04240c3e, 0x0424140c, 0x04241424, 0x04241c14, 0x04242404,
-    0x0424241c, 0x04242c0c, 0x04243e04, 0x042c0414, 0x042c0424, 0x042c1404, 0x042c1414, 0x042c1434,
-    0x042c1c1c, 0x042c240c, 0x042c242c, 0x042c243e, 0x042c3434, 0x042c3e1c, 0x04340434, 0x04340c0c,
-    0x04340c1c, 0x04341c0c, 0x04342c14, 0x04343e0c, 0x043e0404, 0x043e0414, 0x043e0424, 0x043e1404,
-    0x043e1414, 0x043e1434, 0x043e1c1c, 0x043e2c04, 0x043e2c24, 0x0c040404, 0x0c04040c, 0x0c040414,
-    0x0c040424, 0x0c040c04, 0x0c040c0c, 0x0c040c1c, 0x0c040c2c, 0x0c040c3e, 0x0c041404, 0x0c041414,
-    0x0c041c0c, 0x0c041c24, 0x0c041c34, 0x0c042c24, 0x0c042c34, 0x0c04340c, 0x0c043e14, 0x0c0c0404,
-    0x0c0c040c, 0x0c0c041c, 0x0c0c0434, 0x0c0c0c04, 0x0c0c0c24, 0x0c0c140c, 0x0c0c1c04, 0x0c0c1c1c,
-    0x0c0c240c, 0x0c0c2c04, 0x0c0c2c14, 0x0c0c3e04, 0x0c0c3e34, 0x0c140404, 0x0c140c14, 0x0c140c2c,
-    0x0c140c3e, 0x0c141404, 0x0c141424, 0x0c141c14, 0x0c142404, 0x0c14241c, 0x0c142c2c, 0x0c143404,
-    0x0c143e14, 0x0c1c040c, 0x0c1c0424, 0x0c1c043e, 0x0c1c0c04, 0x0c1c0c1c, 0x0c1c140c, 0x0c1c143e,
-    0x0c1c1c04, 0x0c1c1c24, 0x0c1c240c, 0x0c1c3414, 0x0c1c3e04, 0x0c24041c, 0x0c24042c, 0x0c240c14,
-    0x0c240c24, 0x0c241c0c, 0x0c241c1c, 0x0c242414, 0x0c242434, 0x0c242c04, 0x0c242c24, 0x0c2c040c,
-    0x0c2c0c04, 0x0c2c0c1c, 0x0c2c140c, 0x0c2c1c04, 0x0c2c1c14, 0x0c2c2c0c, 0x0c341404, 0x0c341424,
-    0x0c34143e, 0x0c342424, 0x0c342434, 0x0c3e040c, 0x0c3e041c, 0x0c3e0c04, 0x0c3e0c14, 0x0c3e140c,
-    0x0c3e1c2c, 0x0c3e240c, 0x0c3e3414, 0x0c3e3e04, 0x14040404, 0x1404040c, 0x1404041c, 0x1404042c,
-    0x1404043e, 0x14040c04, 0x14040c14, 0x14040c24, 0x14040c34, 0x1404140c, 0x1404141c, 0x1404143e,
-    0x14041c04, 0x14041c14, 0x1404240c, 0x1404241c, 0x1404242c, 0x14042c04, 0x14042c14, 0x1404343e,
-    0x14043e04, 0x14043e1c, 0x14043e2c, 0x140c0404, 0x140c0414, 0x140c0c04, 0x140c0c1c, 0x140c0c3e,
-    0x140c1414, 0x140c142c, 0x140c1c0c, 0x140c1c24, 0x140c2414, 0x140c2c0c, 0x1414040c, 0x14140424,
-    0x1414043e, 0x1414140c, 0x1414141c, 0x14141c04, 0x14141c3e, 0x1414240c, 0x14142c1c, 0x14142c3e,
-    0x14143e0c, 0x14143e24, 0x141c0404, 0x141c0414, 0x141c042c, 0x141c0c0c, 0x141c1414, 0x141c1424,
-    0x141c1c0c, 0x141c1c1c, 0x141c2414, 0x141c2c04, 0x141c3434, 0x1424040c, 0x1424043e, 0x14241404,
-    0x1424141c, 0x14241c14, 0x14241c2c, 0x1424240c, 0x14243e14, 0x14243e2c, 0x142c0424, 0x142c0c0c,
-    0x142c1414, 0x142c1c3e, 0x142c2404, 0x142c2c1c, 0x142c3e04, 0x14340404, 0x14340414, 0x1434043e,
-    0x1434140c, 0x14342c2c, 0x1434340c, 0x143e042c, 0x143e0c0c, 0x143e1434, 0x143e1c04, 0x143e241c,
-    0x143e2c04, 0x1c040414, 0x1c040c0c, 0x1c040c1c, 0x1c040c2c, 0x1c040c3e, 0x1c041414, 0x1c041c0c,
-    0x1c041c1c, 0x1c041c2c, 0x1c042414, 0x1c042424, 0x1c04243e, 0x1c042c0c, 0x1c04341c, 0x1c043e0c,
-    0x1c0c040c, 0x1c0c041c, 0x1c0c042c, 0x1c0c0c24, 0x1c0c140c, 0x1c0c141c, 0x1c0c2404, 0x1c0c3404,
-    0x1c0c3e14, 0x1c0c3e34, 0x1c140404, 0x1c140c14, 0x1c141404, 0x1c141c14, 0x1c141c24, 0x1c142c04,
-    0x1c1c040c, 0x1c1c0c04, 0x1c1c0c24, 0x1c1c140c, 0x1c1c141c, 0x1c1c143e, 0x1c1c1c04, 0x1c1c240c,
-    0x1c1c241c, 0x1c1c243e, 0x1c1c2c2c, 0x1c1c3e1c, 0x1c24041c, 0x1c240c0c, 0x1c240c34, 0x1c241414,
-    0x1c241c0c, 0x1c242c14, 0x1c243404, 0x1c243424, 0x1c2c040c, 0x1c2c0c04, 0x1c2c0c14, 0x1c2c142c,
-    0x1c2c1c14, 0x1c2c2424, 0x1c2c2c34, 0x1c2c3e1c, 0x1c340c34, 0x1c34240c, 0x1c3e040c, 0x1c3e041c,
-    0x1c3e1404, 0x1c3e1414, 0x1c3e1c2c, 0x24040404, 0x24040424, 0x24040c14, 0x24041404, 0x24041424,
-    0x2404143e, 0x24041c14, 0x2404240c, 0x24042c04, 0x24043e04, 0x240c0414, 0x240c043e, 0x240c0c0c,
-    0x240c0c1c, 0x240c1414, 0x240c1c04, 0x240c1c2c, 0x240c241c, 0x240c2c0c, 0x240c2c2c, 0x2414040c,
-    0x2414041c, 0x24140c04, 0x24140c2c, 0x2414140c, 0x24141c1c, 0x24142404, 0x24142c3e, 0x24143414,
-    0x24143e04, 0x241c0424, 0x241c0c0c, 0x241c0c1c, 0x241c1404, 0x241c1414, 0x241c1c0c, 0x241c1c2c,
-    0x24240404, 0x24240414, 0x24241424, 0x24241c3e, 0x24242404, 0x24243e0c, 0x242c042c, 0x242c043e,
-    0x242c140c, 0x242c3414, 0x24340c1c, 0x24341c24, 0x24343404, 0x243e0c04, 0x243e0c2c, 0x243e1c04,
-    0x243e241c, 0x243e2c0c, 0x2c040414, 0x2c040c04, 0x2c040c24, 0x2c041414, 0x2c042404, 0x2c042424,
-    0x2c04243e, 0x2c042c14, 0x2c043434, 0x2c043e24, 0x2c0c040c, 0x2c0c041c, 0x2c0c042c, 0x2c0c0c14,
-    0x2c0c140c, 0x2c0c1c14, 0x2c0c3e14, 0x2c140404, 0x2c140c0c, 0x2c14141c, 0x2c141c04, 0x2c141c34,
-    0x2c142c1c, 0x2c1c0414, 0x2c1c043e, 0x2c1c0c04, 0x2c1c143e, 0x2c1c2424, 0x2c1c2c0c, 0x2c1c342c,
-    0x2c1c3e1c, 0x2c24040c, 0x2c240424, 0x2c241404, 0x2c241c14, 0x2c242434, 0x2c2c0c14, 0x2c2c1434,
-    0x2c2c2c0c, 0x2c2c2c1c, 0x2c342414, 0x2c3e0414, 0x2c3e0424, 0x2c3e1414, 0x34040c0c, 0x34040c1c,
-    0x34040c2c, 0x34041c0c, 0x34041c1c, 0x34043404, 0x340c0404, 0x340c1404, 0x340c143e, 0x340c3424,
-    0x34140c14, 0x34141c24, 0x34142414, 0x34142c2c, 0x34143414, 0x34143e04, 0x341c0404, 0x341c0c24,
-    0x341c140c, 0x341c2404, 0x3424142c, 0x3424241c, 0x34243414, 0x342c0404, 0x342c041c, 0x342c1c24,
-    0x342c3404, 0x3434042c, 0x34342404, 0x343e0c0c, 0x343e0c1c, 0x3e040404, 0x3e040424, 0x3e04043e,
-    0x3e041404, 0x3e041414, 0x3e041c34, 0x3e042404, 0x3e042c24, 0x3e043414, 0x3e0c0414, 0x3e0c0c0c,
-    0x3e0c1424, 0x3e0c241c, 0x3e0c242c, 0x3e14040c, 0x3e140424, 0x3e140c04, 0x3e140c34, 0x3e14140c,
-    0x3e141c04, 0x3e142c0c, 0x3e1c0414, 0x3e1c1c14, 0x3e1c1c2c, 0x3e1c2c1c, 0x3e24040c, 0x3e24042c,
-    0x3e240c1c, 0x3e241404, 0x3e242c04, 0x3e2c1414, 0x3e2c2414, 0x3e340414, 0x3e341c0c, 0x3e3e0404,
+    0x00000000, 0x32090303, 0x23130606, 0x17230909, 0x0c32100c, 0x03031310, 0x380c1713, 0x281a1f17, 
+    0x1a28231a, 0x1038281f, 0x06063223, 0x3e103828, 0x2d1f3e2d, 0x1f2d0332, 0x17000638, 0x0c09093e, 
+    0x03171000, 0x38231303, 0x28321706, 0x1a031f09, 0x100c230c, 0x061a2810, 0x3e282d13, 0x2d3e3817, 
+    0x1f063e1a, 0x1313001f, 0x091f0623, 0x032d0928, 0x38000c2d, 0x28091332, 0x1a171738, 0x10231a3e, 
+    0x06382300, 0x3e032803, 0x2d102d06, 0x1f1a3809, 0x13283e0c, 0x093e0010, 0x00060613, 0x32130917, 
+    0x281f0c1a, 0x1a32101f, 0x10001723, 0x060c1a28, 0x3e171f2d, 0x2d232832, 0x1f382d38, 0x1303323e, 
+    0x09103e00, 0x001a0003, 0x322d0306, 0x233e0909, 0x17090c0c, 0x10131010, 0x061f1713, 0x3e321a17, 
+    0x2d001f1a, 0x1f0c281f, 0x13172d23, 0x09283228, 0x0038382d, 0x32060032, 0x23100338, 0x171a063e, 
+    0x0c2d0c00, 0x033e1003, 0x3e091306, 0x2d131a09, 0x1f231f0c, 0x13322310, 0x09002d13, 0x000c3217, 
+    0x3217381a, 0x2328001f, 0x17380323, 0x0c060628, 0x03100c2d, 0x381f1032, 0x282d1338, 0x1a3e173e, 
+    0x13091f00, 0x09132303, 0x00232806, 0x32323209, 0x2303380c, 0x170c3e10, 0x0c1a0313, 0x03280617, 
+    0x3838091a, 0x2806101f, 0x1a101323, 0x101f1728, 0x062d1f2d, 0x00002332, 0x32092838, 0x2317323e, 
+    0x17233800, 0x0c323e03, 0x03030306, 0x380c0609, 0x281a090c, 0x1a280c10, 0x103e1313, 0x06061717, 
+    0x3e131a1a, 0x2d1f231f, 0x232d2823, 0x17002d28, 0x0c09382d, 0x03173e32, 0x38230038, 0x2838063e, 
+    0x1a030900, 0x10100c03, 0x061a1306, 0x3e281709, 0x2d3e1a0c, 0x1f062310, 0x13132813, 0x0c1f2d17, 
+    0x0332321a, 0x38003e1f, 0x280c0023, 0x1a170328, 0x1023092d, 0x06380c32, 0x3e031038, 0x2d10173e, 
+    0x1f1a1a00, 0x132d1f03, 0x093e2806, 0x00062d09, 0x3813320c, 0x281f3e10, 0x1a320013, 0x10000317, 
+    0x060c091a, 0x3e170c1f, 0x2d281023, 0x1f381328, 0x13031a2d, 0x09101f32, 0x001a2338, 0x322d2d3e, 
+    0x233e3200, 0x1a093803, 0x10130006, 0x06230309, 0x3e32060c, 0x2d000c10, 0x1f0c1013, 0x13171317, 
+    0x09281a1a, 0x00381f1f, 0x32062323, 0x23102d28, 0x171f322d, 0x0c2d3832, 0x033e3e38, 0x3e09033e, 
+    0x2d130600, 0x1f230903, 0x13321006, 0x09031309, 0x000c170c, 0x321a1f10, 0x23282313, 0x17382817, 
+    0x0c06321a, 0x0310381f, 0x381f3e23, 0x282d0328, 0x1f00062d, 0x13090932, 0x09171038, 0x0023133e, 
+    0x32321700, 0x23031f03, 0x170c2306, 0x0c1a2809, 0x03282d0c, 0x383e3810, 0x28063e13, 0x1a130017, 
+    0x101f061a, 0x092d091f, 0x00000c23, 0x32091328, 0x2317172d, 0x17231a32, 0x0c382338, 0x0303283e, 
+    0x380c2d00, 0x281a3803, 0x1a283e06, 0x103e0009, 0x0606060c, 0x3e130910, 0x321f0c13, 0x23321017, 
+    0x1700171a, 0x0c091a1f, 0x03171f23, 0x38232828, 0x28382d2d, 0x1a033232, 0x10103e38, 0x061a003e, 
+    0x3e2d0300, 0x2d3e0903, 0x1f060c06, 0x17131009, 0x0c1f170c, 0x03321a10, 0x38001f13, 0x280c2817, 
+    0x1a172d1a, 0x1028321f, 0x06383823, 0x3e030028, 0x2d10032d, 0x1f1a0632, 0x132d0c38, 0x093e103e, 
+    0x03091300, 0x38131a03, 0x28231f06, 0x1a322309, 0x10002d0c, 0x060c3210, 0x3e173813, 0x2d280017, 
+    0x1f38031a, 0x1306061f, 0x09100c23, 0x001f1028, 0x322d132d, 0x233e1732, 0x1a091f38, 0x1013233e, 
+    0x06232800, 0x3e323203, 0x2d033806, 0x1f0c3e09, 0x131a030c, 0x09280610, 0x00380913, 0x32061017, 
+    0x2310131a, 0x171f171f, 0x0c2d1f23, 0x06002328, 0x3e09282d, 0x2d133232, 0x1f233838, 0x13323e3e, 
+    0x09030300, 0x000c0603, 0x321a0906, 0x23280c09, 0x173e130c, 0x0c061710, 0x03101a13, 0x381f2317, 
+    0x2d2d281a, 0x1f002d1f, 0x13093823, 0x09173e28, 0x0023002d, 0x32380632, 0x23030938, 0x170c0c3e, 
+    0x0c1a1300, 0x03281703, 0x383e1a06, 0x28062309, 0x1a13280c, 0x131f2d10, 0x09323213, 0x00003e17, 
+    0x3209001a, 0x2317031f, 0x17230923, 0x0c380c28, 0x0303102d, 0x38101732, 0x281a1a38, 0x1a2d1f3e, 
+    0x103e2800, 0x06062d03, 0x00133206, 0x321f3e09, 0x2332000c, 0x17000310, 0x0c0c0913, 0x03170c17, 
+    0x3828101a, 0x2838131f, 0x1a031a23, 0x10101f28, 0x061a232d, 0x3e2d2d32, 0x2d3e3238, 0x2309383e, 
+    0x17130000, 0x0c230303, 0x03320606, 0x38000c09, 0x280c100c, 0x1a171310, 0x10281a13, 0x06381f17, 
+    0x3e06231a, 0x2d102d1f, 0x1f1a3223, 0x132d3828, 0x093e3e2d, 0x03090332, 0x38130638, 0x2823093e, 
+    0x1a321000, 0x10031303, 0x060c1706, 0x3e171f09, 0x2d28230c, 0x1f382810, 0x13063213, 0x09103817, 
+    0x001f3e1a, 0x322d031f, 0x28000623, 0x1a090928, 0x1013102d, 0x06231332, 0x3e321738, 0x2d031a3e, 
+    0x1f0c2300, 0x131a2803, 0x09282d06, 0x003e3809, 0x32063e0c, 0x23100010, 0x171f0613, 0x102d0917, 
+    0x06000c1a, 0x3e09131f, 0x2d171723, 0x1f231a28, 0x1338232d, 0x09032832, 0x000c2d38, 0x321a383e, 
+    0x23283e00, 0x173e0003, 0x0c060606, 0x03130909, 0x3e1f0c0c, 0x2d321010, 0x1f001713, 0x13091a17, 
+    0x09171f1a, 0x0023281f, 0x32382d23, 0x23033228, 0x17103e2d, 0x0c1a0032, 0x032d0338, 0x383e093e, 
+    0x28060c00, 0x1f131003, 0x131f1706, 0x09321a09, 0x00001f0c, 0x320c2810, 0x23172d13, 0x17233217, 
+    0x0c38381a, 0x0303001f, 0x38100323, 0x281a0628, 0x1a2d0c2d, 0x103e1032, 0x09091338, 0x00131a3e, 
+    0x321f1f00, 0x23322303, 0x17002d06, 0x0c0c3209, 0x0317380c, 0x38280010, 0x28380313, 0x1a060617, 
+    0x10100c1a, 0x061a101f, 0x3e2d1323, 0x2d3e1728, 0x23091f2d, 0x17132332, 0x0c232838, 0x0332323e, 
+    0x38033800, 0x280c3e03, 0x1a170306, 0x10280609, 0x0638090c, 0x3e061010, 0x2d101313, 0x1f1f1717, 
+    0x132d1f1a, 0x0c00231f, 0x03092823, 0x38133228, 0x2823382d, 0x1a323e32, 0x10030038, 0x060c063e, 
+    0x3e1a0900, 0x2d280c03, 0x1f3e1306, 0x13061709, 0x09101a0c, 0x001f2310, 0x382d2813, 0x28002d17, 
+    0x1a09381a, 0x10173e1f, 0x06230023, 0x3e380628, 0x2d03092d, 0x1f0c0c32, 0x131a1338, 0x0928173e, 
+    0x003e1a00, 0x32062303, 0x23132806, 0x1a1f2d09, 0x102d320c, 0x06003e10, 0x3e090013, 0x2d170317, 
+    0x1f23091a, 0x13380c1f, 0x09031023, 0x00101728, 0x321a1a2d, 0x23281f32, 0x173e2838, 0x0c062d3e, 
+    0x06133200, 0x3e1f3e03, 0x2d320006, 0x1f000309, 0x130c090c, 0x09170c10, 0x00231013, 0x32381317, 
+    0x23031a1a, 0x17101f1f, 0x0c1a2323, 0x032d2d28, 0x383e322d, 0x2d093832, 0x1f130038, 0x131f033e, 
+    0x09320600, 0x00000c03, 0x320c1006, 0x23171309, 0x17281a0c, 0x0c381f10, 0x03062313, 0x38102d17, 
+    0x281a321a, 0x1a2d381f, 0x103e3e23, 0x09090328, 0x0013062d, 0x32230932, 0x23321038, 0x1703133e, 
+    0x0c0c1700, 0x03171f03, 0x38282306, 0x28382809, 0x1a06320c, 0x10103810, 0x061f3e13, 0x3e2d0317, 
+    0x3200061a, 0x2309091f, 0x17131023, 0x0c231328, 0x0332172d, 0x38031a32, 0x280c2338, 0x1a1a283e, 
+    0x10282d00, 0x06383803, 0x3e063e06, 0x2d100009, 0x1f1f060c, 0x172d0910, 0x0c000c13, 0x03091317, 
+    0x3817171a, 0x28231a1f, 0x1a322323, 0x10032828, 0x060c2d2d, 0x3e1a3832, 0x2d283e38, 0x1f3e003e, 
+
+
 };
 
 #define NGRID_IQ2XXS 512
@@ -10546,11 +10548,12 @@ typedef struct {
     uint32_t * grid;
     int      * map;
     uint16_t * neighbours;
+    int8_t   * round_lookup; // half-integer to nearest quant value. 127*2 entries
 } iq3_entry_t;
 
 static iq3_entry_t iq3_data[2] = {
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
+    {NULL, NULL, NULL, NULL},
+    {NULL, NULL, NULL, NULL},
 };
 
 static inline int iq3_data_index(int grid_size) {
@@ -10564,6 +10567,12 @@ static int iq3_compare_func(const void * left, const void * right) {
     const int * r = (const int *)right;
     return l[0] < r[0] ? -1 : l[0] > r[0] ? 1 : l[1] < r[1] ? -1 : l[1] > r[1] ? 1 : 0;
 }
+
+
+static int8_t QUANT_INDEX_TO_VALUE[] = { 0, 3, 6, 9, 12, 16, 19, 23, 26, 31, 35, 40, 45, 50, 56, 62 };
+static int8_t QUANT_VALUE_TO_INDEX[128] = {
+	0, -1, -1, 1, -1, -1, 2, -1, -1, 3, -1, -1, 4, -1, -1, -1, 5, -1, -1, 6, -1, -1, -1, 7, -1, -1, 8, -1, -1, -1, -1, 9, -1, -1, -1, 10, -1, -1, -1, -1, 11, -1, -1, -1, -1, 12, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1, 14, -1, -1, -1, -1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+};
 
 void iq3xs_init_impl(int grid_size) {
     const int gindex = iq3_data_index(grid_size);
@@ -10588,55 +10597,34 @@ void iq3xs_init_impl(int grid_size) {
          3185,  3215,  3252,  3288,  3294,  3364,  3397,  3434,  3483,  3523,  3537,  3587,  3589,  3591,  3592,  3610,
          3626,  3670,  3680,  3722,  3749,  3754,  3776,  3789,  3803,  3824,  3857,  3873,  3904,  3906,  3924,  3992,
     };
-    static const uint16_t kgrid_512[512] = {
-            0,     1,     2,     5,     7,     8,     9,    10,    12,    14,    16,    17,    21,    27,    32,    34,
-           37,    39,    41,    43,    48,    50,    57,    60,    63,    64,    65,    66,    68,    72,    73,    77,
-           80,    83,    87,    89,    93,   100,   113,   117,   122,   128,   129,   133,   135,   136,   139,   142,
-          145,   149,   152,   156,   162,   165,   167,   169,   171,   184,   187,   195,   201,   205,   208,   210,
-          217,   219,   222,   228,   232,   234,   247,   249,   253,   256,   267,   271,   273,   276,   282,   288,
-          291,   297,   312,   322,   324,   336,   338,   342,   347,   353,   357,   359,   374,   379,   390,   393,
-          395,   409,   426,   441,   448,   450,   452,   464,   466,   470,   475,   488,   492,   512,   513,   514,
-          516,   520,   521,   523,   525,   527,   528,   530,   537,   540,   542,   556,   558,   561,   570,   576,
-          577,   579,   582,   584,   588,   593,   600,   603,   609,   616,   618,   632,   638,   640,   650,   653,
-          655,   656,   660,   666,   672,   675,   685,   688,   698,   705,   708,   711,   712,   715,   721,   727,
-          728,   732,   737,   754,   760,   771,   773,   778,   780,   793,   795,   802,   806,   808,   812,   833,
-          840,   843,   849,   856,   858,   873,   912,   916,   919,   932,   934,   961,   963,   968,   970,   977,
-          989,   993,  1010,  1016,  1024,  1025,  1027,  1029,  1031,  1032,  1034,  1036,  1038,  1041,  1043,  1047,
-         1048,  1050,  1057,  1059,  1061,  1064,  1066,  1079,  1080,  1083,  1085,  1088,  1090,  1096,  1099,  1103,
-         1106,  1109,  1113,  1116,  1122,  1129,  1153,  1156,  1159,  1169,  1171,  1176,  1183,  1185,  1195,  1199,
-         1209,  1212,  1216,  1218,  1221,  1225,  1234,  1236,  1241,  1243,  1250,  1256,  1270,  1281,  1287,  1296,
-         1299,  1306,  1309,  1313,  1338,  1341,  1348,  1353,  1362,  1375,  1376,  1387,  1400,  1408,  1410,  1415,
-         1425,  1453,  1457,  1477,  1481,  1494,  1496,  1507,  1512,  1538,  1545,  1547,  1549,  1551,  1554,  1561,
-         1563,  1565,  1570,  1572,  1575,  1577,  1587,  1593,  1601,  1603,  1605,  1612,  1617,  1619,  1632,  1648,
-         1658,  1662,  1664,  1674,  1680,  1690,  1692,  1704,  1729,  1736,  1740,  1745,  1747,  1751,  1752,  1761,
-         1763,  1767,  1773,  1787,  1795,  1801,  1806,  1810,  1817,  1834,  1840,  1844,  1857,  1864,  1866,  1877,
-         1882,  1892,  1902,  1915,  1934,  1953,  1985,  1987,  2000,  2002,  2013,  2048,  2052,  2058,  2064,  2068,
-         2071,  2074,  2081,  2088,  2104,  2114,  2119,  2121,  2123,  2130,  2136,  2141,  2147,  2153,  2157,  2177,
-         2179,  2184,  2189,  2193,  2203,  2208,  2223,  2226,  2232,  2244,  2249,  2251,  2256,  2258,  2265,  2269,
-         2304,  2306,  2324,  2335,  2336,  2361,  2373,  2375,  2385,  2418,  2443,  2460,  2480,  2504,  2509,  2520,
-         2531,  2537,  2562,  2568,  2572,  2578,  2592,  2596,  2599,  2602,  2614,  2620,  2625,  2627,  2629,  2634,
-         2641,  2650,  2682,  2688,  2697,  2707,  2712,  2718,  2731,  2754,  2759,  2760,  2775,  2788,  2793,  2805,
-         2811,  2817,  2820,  2832,  2842,  2854,  2890,  2902,  2921,  2923,  2978,  3010,  3012,  3026,  3081,  3083,
-         3085,  3097,  3099,  3120,  3136,  3152,  3159,  3188,  3210,  3228,  3234,  3245,  3250,  3256,  3264,  3276,
-         3281,  3296,  3349,  3363,  3378,  3392,  3395,  3420,  3440,  3461,  3488,  3529,  3531,  3584,  3588,  3591,
-         3600,  3602,  3614,  3616,  3628,  3634,  3650,  3657,  3668,  3683,  3685,  3713,  3716,  3720,  3726,  3729,
-         3736,  3753,  3778,  3802,  3805,  3819,  3841,  3845,  3851,  3856,  3880,  3922,  3938,  3970,  3993,  4032,
-    };
+    static uint16_t kgrid_512[512];
 
-    const int kmap_size = 4096;
+    for (int k = 0; k < grid_size; ++k) {
+        uint16_t grid_indices = 0;
+        for (int i = 0; i < 4; ++i) {
+            uint32_t grid_value = (iq3xs_grid[k] >> (8*i)) & 0xff;
+            int8_t grid_index = QUANT_VALUE_TO_INDEX[grid_value];
+            GGML_ASSERT( grid_index >= 0 && grid_index <= 0xf);
+            grid_indices |= grid_index << (4*i);
+        }
+        kgrid_512[k] = grid_indices;
+    }
+
+    const int kmap_size = 65536;
     const int nwant = grid_size == 256 ? 2 : 3;
     const uint16_t * kgrid = grid_size == 256 ? kgrid_256 : kgrid_512;
     uint32_t * kgrid_q3xs;
     int      * kmap_q3xs;
     uint16_t * kneighbors_q3xs;
+    int8_t   * kround_lookup_q3xs;
 
     printf("================================================================= %s(grid_size = %d)\n", __func__, grid_size);
     uint32_t * the_grid = (uint32_t *)malloc(grid_size*sizeof(uint32_t));
     for (int k = 0; k < grid_size; ++k) {
         int8_t * pos = (int8_t *)(the_grid + k);
         for (int i = 0; i < 4; ++i) {
-            int l = (kgrid[k] >> 3*i) & 0x7;
-            pos[i] = 2*l + 1;
+            int l = (kgrid[k] >> 4*i) & 0xf;
+            pos[i] = QUANT_INDEX_TO_VALUE[l];
         }
     }
     kgrid_q3xs = the_grid;
@@ -10650,8 +10638,8 @@ void iq3xs_init_impl(int grid_size) {
         aux32 = kgrid_q3xs[i];
         uint16_t index = 0;
         for (int k=0; k<4; ++k) {
-            uint16_t q = (aux8[k] - 1)/2;
-            index |= (q << 3*k);
+            uint16_t q = QUANT_VALUE_TO_INDEX[aux8[k]];
+            index |= (q << 4*k);
         }
         kmap_q3xs[index] = i;
     }
@@ -10662,8 +10650,8 @@ void iq3xs_init_impl(int grid_size) {
         if (kmap_q3xs[i] >= 0) continue;
         ++num_not_in_map;
         for (int k = 0; k < 4; ++k) {
-            int l = (i >> 3*k) & 0x7;
-            pos[k] = 2*l + 1;
+            int l = (i >> 4*k) & 0xf;
+            pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
             const int8_t * pg = (const int8_t *)(kgrid_q3xs + j);
@@ -10692,8 +10680,8 @@ void iq3xs_init_impl(int grid_size) {
     for (int i = 0; i < kmap_size; ++i) {
         if (kmap_q3xs[i] >= 0) continue;
         for (int k = 0; k < 4; ++k) {
-            int l = (i >> 3*k) & 0x7;
-            pos[k] = 2*l + 1;
+            int l = (i >> 4*k) & 0xf;
+            pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
             const int8_t * pg = (const int8_t *)(kgrid_q3xs + j);
@@ -10719,6 +10707,22 @@ void iq3xs_init_impl(int grid_size) {
         *start = n;
     }
     free(dist2);
+
+    int round_lookup_size = 127*2;
+    kround_lookup_q3xs = (int8_t *)malloc(round_lookup_size*sizeof(int8_t));
+    iq3_data[gindex].round_lookup = kround_lookup_q3xs;
+
+    for (int i = 0; i < round_lookup_size; i++) {
+        float round_from = (float)i * 0.5f;
+        float best_distance = 1000;
+        for (size_t j = 0; j < sizeof(QUANT_INDEX_TO_VALUE)/sizeof(*QUANT_INDEX_TO_VALUE); j++) {
+            float distance = fabs(round_from - (float)QUANT_INDEX_TO_VALUE[j]);
+            if (distance < best_distance) {
+                kround_lookup_q3xs[i] = j;
+                best_distance = distance;
+            }
+        }
+    }
 }
 
 void iq3xs_free_impl(int grid_size) {
@@ -10739,9 +10743,10 @@ static int iq3_find_best_neighbour(const uint16_t * restrict neighbours, const u
     int grid_index = -1;
     for (int j = 1; j <= num_neighbors; ++j) {
         const int8_t * pg = (const int8_t *)(grid + neighbours[j]);
+
         float d2 = 0;
         for (int i = 0; i < 4; ++i) {
-            float q = pg[i];
+            float q = pg[i] * 0.25;
             float diff = scale*q - xval[i];
             d2 += weight[i]*diff*diff;
         }
@@ -10751,7 +10756,7 @@ static int iq3_find_best_neighbour(const uint16_t * restrict neighbours, const u
     }
     GGML_ASSERT(grid_index >= 0);
     const int8_t * pg = (const int8_t *)(grid + grid_index);
-    for (int i = 0; i < 4; ++i) L[i] = (pg[i] - 1)/2;
+    for (int i = 0; i < 4; ++i) L[i] = QUANT_VALUE_TO_INDEX[pg[i]];
     return grid_index;
 }
 
@@ -10992,6 +10997,12 @@ void quantize_row_iq3_xxs_reference(const float * restrict x, block_iq3_xxs * re
     quantize_row_iq3_xxs_impl(256, x, y, k, NULL);
 }
 
+static int8_t get_quant_bucket(float x, float id, const int8_t *quant_index_for_region) {
+    int halves = (int)(id*x * 8);
+    halves = MAX(0, MIN(127*2, halves));
+    return quant_index_for_region[halves];
+}
+
 static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, void * restrict vy, int n,
         const float * restrict quant_weights,
         float   * scales,
@@ -11009,11 +11020,13 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
     const uint32_t * kgrid_q3xs      = iq3_data[gindex].grid;
     const int      * kmap_q3xs       = iq3_data[gindex].map;
     const uint16_t * kneighbors_q3xs = iq3_data[gindex].neighbours;
+    const int8_t   * kround_lookup_q3xs = iq3_data[gindex].round_lookup;
 
     //GGML_ASSERT(quant_weights   && "missing quantization weights");
     GGML_ASSERT(kgrid_q3xs      && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(kmap_q3xs       && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(kneighbors_q3xs && "forgot to call ggml_quantize_init()?");
+    GGML_ASSERT(kround_lookup_q3xs && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(n%QK_K == 0);
 
     const int kMaxQ = 8;
@@ -11073,11 +11086,10 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                 float this_scale = 1/id;
                 for (int k = 0; k < bs4; ++k) {
                     for (int i = 0; i < 4; ++i) {
-                        int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
-                        Laux[4*k+i] = MAX(0, MIN(kMaxQ-1, l));
+                        Laux[4*k+i] = get_quant_bucket(id, xval[4*k+i], kround_lookup_q3xs);
                     }
                     uint16_t u = 0;
-                    for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 3*i);
+                    for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 4*i);
                     int grid_index = kmap_q3xs[u];
                     is_on_grid_aux[k] = true;
                     if (grid_index < 0) {
@@ -11089,7 +11101,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                 float sumqx = 0, sumq2 = 0;
                 for (int i = 0; i < block_size; ++i) {
                     float w = weight[i];
-                    float q = 2*Laux[i] + 1;
+                    float q = QUANT_INDEX_TO_VALUE[Laux[i]] * 0.25;
                     sumqx += w*xval[i]*q;
                     sumq2 += w*q*q;
                 }
@@ -11107,9 +11119,8 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                     if (is_on_grid[k]) continue;
                     uint16_t u = 0;
                     for (int i = 0; i < 4; ++i) {
-                        int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
-                        l = MAX(0, MIN(kMaxQ-1, l));
-                        u |= (l << 3*i);
+                        int l_new = get_quant_bucket(id, xval[4*k+i], kround_lookup_q3xs);
+                        u |= (l_new << 4*i);
                     }
                     int grid_index = kmap_q3xs[u];
                     if (grid_index < 0) {
@@ -11117,12 +11128,15 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                         grid_index = iq3_find_best_neighbour(neighbours, kgrid_q3xs, xval + 4*k, waux + 4*k, scale, L + 4*k);
                     }
                     const int8_t * pg = (const int8_t *)(kgrid_q3xs + grid_index);
-                    for (int i = 0; i < 4; ++i) L[4*k+i] = (pg[i] - 1)/2;
+                    for (int i = 0; i < 4; ++i) {
+                        L[4*k+i] = QUANT_VALUE_TO_INDEX[pg[i]];
+                        GGML_ASSERT(L[4*k+i] >= 0);
+                    }
                 }
                 float sumqx = 0, sumq2 = 0;
                 for (int i = 0; i < block_size; ++i) {
                     float w = weight[i];
-                    float q = 2*L[i] + 1;
+                    float q = QUANT_INDEX_TO_VALUE[L[i]] * 0.25;
                     sumqx += w*xval[i]*q;
                     sumq2 += w*q*q;
                 }
@@ -11136,7 +11150,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
             }
             for (int k = 0; k < bs4; ++k) {
                 uint16_t u = 0;
-                for (int i = 0; i < 4; ++i) u |= (L[4*k+i] << 3*i);
+                for (int i = 0; i < 4; ++i) u |= (L[4*k+i] << 4*i);
                 int grid_index = kmap_q3xs[u];
                 if (grid_index < 0) {
                     printf("Oops: found point %u not on grid:", u);
@@ -11169,7 +11183,6 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
             l2 = MAX(0, MIN(15, l2));
             y[ibl].scales[ib/2] = l1 | (l2 << 4);
         }
-
     }
 }
 

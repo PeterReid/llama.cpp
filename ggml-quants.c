@@ -10597,16 +10597,17 @@ void iq3xs_init_impl(int grid_size) {
     static uint16_t kgrid_512[512];
     
     for (int k = 0; k < grid_size; ++k) {
-        uint16_t grid_index = 0;
+        uint16_t grid_indices = 0;
         for (int i = 0; i < 4; ++i) {
             uint32_t grid_value = (iq3xs_grid[k] >> (8*i)) & 0xff;
-            GGML_ASSERT( QUANT_VALUE_TO_INDEX[grid_value] >= 0 );
-            grid_index |= QUANT_VALUE_TO_INDEX[grid_value] << (3*i);
+            int8_t grid_index = QUANT_VALUE_TO_INDEX[grid_value];
+            GGML_ASSERT( grid_index >= 0 && grid_index <= 0xf);
+            grid_indices |= grid_index << (4*i);
         }
-        kgrid_512[k] = grid_index;
+        kgrid_512[k] = grid_indices;
     }
 
-    const int kmap_size = 4096;
+    const int kmap_size = 65536;
     const int nwant = grid_size == 256 ? 2 : 3;
     const uint16_t * kgrid = grid_size == 256 ? kgrid_256 : kgrid_512;
     uint32_t * kgrid_q3xs;
@@ -10618,7 +10619,7 @@ void iq3xs_init_impl(int grid_size) {
     for (int k = 0; k < grid_size; ++k) {
         int8_t * pos = (int8_t *)(the_grid + k);
         for (int i = 0; i < 4; ++i) {
-            int l = (kgrid[k] >> 3*i) & 0x7;
+            int l = (kgrid[k] >> 4*i) & 0xf;
             pos[i] = QUANT_INDEX_TO_VALUE[l];
         }
     }
@@ -10634,7 +10635,7 @@ void iq3xs_init_impl(int grid_size) {
         uint16_t index = 0;
         for (int k=0; k<4; ++k) {
             uint16_t q = QUANT_VALUE_TO_INDEX[aux8[k]];
-            index |= (q << 3*k);
+            index |= (q << 4*k);
         }
         kmap_q3xs[index] = i;
     }
@@ -10645,7 +10646,7 @@ void iq3xs_init_impl(int grid_size) {
         if (kmap_q3xs[i] >= 0) continue;
         ++num_not_in_map;
         for (int k = 0; k < 4; ++k) {
-            int l = (i >> 3*k) & 0x7;
+            int l = (i >> 4*k) & 0xf;
             pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
@@ -10675,7 +10676,7 @@ void iq3xs_init_impl(int grid_size) {
     for (int i = 0; i < kmap_size; ++i) {
         if (kmap_q3xs[i] >= 0) continue;
         for (int k = 0; k < 4; ++k) {
-            int l = (i >> 3*k) & 0x7;
+            int l = (i >> 4*k) & 0xf;
             pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
@@ -11099,7 +11100,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                         GGML_ASSERT(Laux[4*k+i] == get_quant_bucket(id, xval[4*k+i]));
                     }
                     uint16_t u = 0;
-                    for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 3*i);
+                    for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 4*i);
                     int grid_index = kmap_q3xs[u];
                     is_on_grid_aux[k] = true;
                     if (grid_index < 0) {
@@ -11133,7 +11134,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                         l = MAX(0, MIN(kMaxQ-1, l));
                         
                         GGML_ASSERT(l == get_quant_bucket(id, xval[4*k+i]));
-                        u |= (l << 3*i);
+                        u |= (l << 4*i);
                     }
                     int grid_index = kmap_q3xs[u];
                     if (grid_index < 0) {
@@ -11163,7 +11164,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
             }
             for (int k = 0; k < bs4; ++k) {
                 uint16_t u = 0;
-                for (int i = 0; i < 4; ++i) u |= (L[4*k+i] << 3*i);
+                for (int i = 0; i < 4; ++i) u |= (L[4*k+i] << 4*i);
                 int grid_index = kmap_q3xs[u];
                 if (grid_index < 0) {
                     printf("Oops: found point %u not on grid:", u);

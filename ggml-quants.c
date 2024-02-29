@@ -10565,6 +10565,12 @@ static int iq3_compare_func(const void * left, const void * right) {
     return l[0] < r[0] ? -1 : l[0] > r[0] ? 1 : l[1] < r[1] ? -1 : l[1] > r[1] ? 1 : 0;
 }
 
+
+static int8_t QUANT_INDEX_TO_VALUE[] = { 4, 12, 20, 28, 36, 44, 52, 62 };
+static int8_t QUANT_VALUE_TO_INDEX[128] = {
+    -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, 3, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+};
+
 void iq3xs_init_impl(int grid_size) {
     const int gindex = iq3_data_index(grid_size);
     if (iq3_data[gindex].grid) {
@@ -10636,7 +10642,7 @@ void iq3xs_init_impl(int grid_size) {
         int8_t * pos = (int8_t *)(the_grid + k);
         for (int i = 0; i < 4; ++i) {
             int l = (kgrid[k] >> 3*i) & 0x7;
-            pos[i] = 2*l + 1;
+            pos[i] = QUANT_INDEX_TO_VALUE[l];
         }
     }
     kgrid_q3xs = the_grid;
@@ -10650,7 +10656,7 @@ void iq3xs_init_impl(int grid_size) {
         aux32 = kgrid_q3xs[i];
         uint16_t index = 0;
         for (int k=0; k<4; ++k) {
-            uint16_t q = (aux8[k] - 1)/2;
+            uint16_t q = QUANT_VALUE_TO_INDEX[aux8[k]];
             index |= (q << 3*k);
         }
         kmap_q3xs[index] = i;
@@ -10663,7 +10669,7 @@ void iq3xs_init_impl(int grid_size) {
         ++num_not_in_map;
         for (int k = 0; k < 4; ++k) {
             int l = (i >> 3*k) & 0x7;
-            pos[k] = 2*l + 1;
+            pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
             const int8_t * pg = (const int8_t *)(kgrid_q3xs + j);
@@ -10693,7 +10699,7 @@ void iq3xs_init_impl(int grid_size) {
         if (kmap_q3xs[i] >= 0) continue;
         for (int k = 0; k < 4; ++k) {
             int l = (i >> 3*k) & 0x7;
-            pos[k] = 2*l + 1;
+            pos[k] = QUANT_INDEX_TO_VALUE[l];
         }
         for (int j = 0; j < grid_size; ++j) {
             const int8_t * pg = (const int8_t *)(kgrid_q3xs + j);
@@ -10739,9 +10745,10 @@ static int iq3_find_best_neighbour(const uint16_t * restrict neighbours, const u
     int grid_index = -1;
     for (int j = 1; j <= num_neighbors; ++j) {
         const int8_t * pg = (const int8_t *)(grid + neighbours[j]);
+
         float d2 = 0;
         for (int i = 0; i < 4; ++i) {
-            float q = pg[i];
+            float q = pg[i] * 0.25;
             float diff = scale*q - xval[i];
             d2 += weight[i]*diff*diff;
         }
@@ -10751,7 +10758,7 @@ static int iq3_find_best_neighbour(const uint16_t * restrict neighbours, const u
     }
     GGML_ASSERT(grid_index >= 0);
     const int8_t * pg = (const int8_t *)(grid + grid_index);
-    for (int i = 0; i < 4; ++i) L[i] = (pg[i] - 1)/2;
+    for (int i = 0; i < 4; ++i) L[i] = QUANT_VALUE_TO_INDEX[pg[i]];
     return grid_index;
 }
 
@@ -11023,6 +11030,12 @@ static void print_iq3(block_iq3_s *b) {
     printf("}\n");
 }
 
+static int8_t get_quant_bucket(float x, float id) {
+    const int kMaxQ = 8;
+    int l = nearest_int(0.5f*(id*x-1));
+    return MAX(0, MIN(kMaxQ-1, l));
+}
+
 static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, void * restrict vy, int n,
         const float * restrict quant_weights,
         float   * scales,
@@ -11106,6 +11119,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                     for (int i = 0; i < 4; ++i) {
                         int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
                         Laux[4*k+i] = MAX(0, MIN(kMaxQ-1, l));
+                        GGML_ASSERT(Laux[4*k+i] == get_quant_bucket(id, xval[4*k+i]));
                     }
                     uint16_t u = 0;
                     for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 3*i);
@@ -11120,7 +11134,7 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                 float sumqx = 0, sumq2 = 0;
                 for (int i = 0; i < block_size; ++i) {
                     float w = weight[i];
-                    float q = 2*Laux[i] + 1;
+                    float q = QUANT_INDEX_TO_VALUE[Laux[i]] * 0.25;
                     sumqx += w*xval[i]*q;
                     sumq2 += w*q*q;
                 }
@@ -11140,6 +11154,8 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                     for (int i = 0; i < 4; ++i) {
                         int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
                         l = MAX(0, MIN(kMaxQ-1, l));
+                        
+                        GGML_ASSERT(l == get_quant_bucket(id, xval[4*k+i]));
                         u |= (l << 3*i);
                     }
                     int grid_index = kmap_q3xs[u];
@@ -11148,12 +11164,15 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                         grid_index = iq3_find_best_neighbour(neighbours, kgrid_q3xs, xval + 4*k, waux + 4*k, scale, L + 4*k);
                     }
                     const int8_t * pg = (const int8_t *)(kgrid_q3xs + grid_index);
-                    for (int i = 0; i < 4; ++i) L[4*k+i] = (pg[i] - 1)/2;
+                    for (int i = 0; i < 4; ++i) {
+                        L[4*k+i] = QUANT_VALUE_TO_INDEX[pg[i]];
+                        GGML_ASSERT(L[4*k+i] >= 0);
+                    }
                 }
                 float sumqx = 0, sumq2 = 0;
                 for (int i = 0; i < block_size; ++i) {
                     float w = weight[i];
-                    float q = 2*L[i] + 1;
+                    float q = QUANT_INDEX_TO_VALUE[L[i]] * 0.25;
                     sumqx += w*xval[i]*q;
                     sumq2 += w*q*q;
                 }

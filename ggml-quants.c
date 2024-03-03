@@ -10546,11 +10546,12 @@ typedef struct {
     uint32_t * grid;
     int      * map;
     uint16_t * neighbours;
+    int8_t   * round_lookup; // half-integer to nearest quant value. 127*2 entries
 } iq3_entry_t;
 
 static iq3_entry_t iq3_data[2] = {
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
+    {NULL, NULL, NULL, NULL},
+    {NULL, NULL, NULL, NULL},
 };
 
 static inline int iq3_data_index(int grid_size) {
@@ -10566,9 +10567,9 @@ static int iq3_compare_func(const void * left, const void * right) {
 }
 
 
-static int8_t QUANT_INDEX_TO_VALUE[] = { 4, 12, 20, 28, 36, 44, 52, 62 };
+static int8_t QUANT_INDEX_TO_VALUE[] = { 4, 12, 20, 28, 36, 44, 52, 60 };
 static int8_t QUANT_VALUE_TO_INDEX[128] = {
-    -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, 3, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+    -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, 3, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, 7, -1, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
 void iq3xs_init_impl(int grid_size) {
@@ -10613,6 +10614,7 @@ void iq3xs_init_impl(int grid_size) {
     uint32_t * kgrid_q3xs;
     int      * kmap_q3xs;
     uint16_t * kneighbors_q3xs;
+    int8_t   * kround_lookup_q3xs;
 
     printf("================================================================= %s(grid_size = %d)\n", __func__, grid_size);
     uint32_t * the_grid = (uint32_t *)malloc(grid_size*sizeof(uint32_t));
@@ -10703,6 +10705,23 @@ void iq3xs_init_impl(int grid_size) {
         *start = n;
     }
     free(dist2);
+    
+    int round_lookup_size = 127*2;
+    kround_lookup_q3xs = (int8_t *)malloc(round_lookup_size*sizeof(int8_t));
+    iq3_data[gindex].round_lookup = kround_lookup_q3xs;
+    
+    // 64 -> 4
+    for (int i = 0; i < round_lookup_size; i++) {
+        float round_from = (float)i * 0.5f;
+        float best_distance = 1000;
+        for (size_t j = 0; j < sizeof(QUANT_INDEX_TO_VALUE)/sizeof(*QUANT_INDEX_TO_VALUE); j++) {
+            float distance = fabs(round_from - (float)QUANT_INDEX_TO_VALUE[j]);// - (QUANT_INDEX_TO_VALUE[j]%2?.001f:0.0f);
+            if (distance < best_distance) {
+                kround_lookup_q3xs[i] = j;
+                best_distance = distance;
+            }
+        }
+    }
 }
 
 void iq3xs_free_impl(int grid_size) {
@@ -11008,10 +11027,14 @@ static void print_iq3(block_iq3_s *b) {
     printf("}\n");
 }
 
-static int8_t get_quant_bucket(float x, float id) {
-    const int kMaxQ = 8;
-    int l = nearest_int(0.5f*(id*x-1));
-    return MAX(0, MIN(kMaxQ-1, l));
+// If we have a quant for 3 and a quant for 4, we need a region cut off at 3.5.
+// If we have a quant for 3 and a quant for 5, we need a region cut off at 4.0
+// So, we need region cuts every 0.5. So 127*2 regions to cover the whole positive int8_t range.
+static int8_t get_quant_bucket(float x, float id, const int8_t *quant_index_for_region) {
+    int halves = (int)(id*x * 8);
+    halves = MAX(0, MIN(127*2, halves));
+    //printf("halve s= %d, precise = %f, result = %d\n", halves, (double)(id*x*8), quant_index_for_region[halves]);
+    return quant_index_for_region[halves];
 }
 
 static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, void * restrict vy, int n,
@@ -11031,11 +11054,13 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
     const uint32_t * kgrid_q3xs      = iq3_data[gindex].grid;
     const int      * kmap_q3xs       = iq3_data[gindex].map;
     const uint16_t * kneighbors_q3xs = iq3_data[gindex].neighbours;
+    const int8_t   * kround_lookup_q3xs = iq3_data[gindex].round_lookup;
 
     //GGML_ASSERT(quant_weights   && "missing quantization weights");
     GGML_ASSERT(kgrid_q3xs      && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(kmap_q3xs       && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(kneighbors_q3xs && "forgot to call ggml_quantize_init()?");
+    GGML_ASSERT(kround_lookup_q3xs && "forgot to call ggml_quantize_init()?");
     GGML_ASSERT(n%QK_K == 0);
 
     const int kMaxQ = 8;
@@ -11095,9 +11120,14 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                 float this_scale = 1/id;
                 for (int k = 0; k < bs4; ++k) {
                     for (int i = 0; i < 4; ++i) {
+                        Laux[4*k+i] = get_quant_bucket(id, xval[4*k+i], kround_lookup_q3xs);
+                        
+                        /*
                         int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
-                        Laux[4*k+i] = MAX(0, MIN(kMaxQ-1, l));
-                        GGML_ASSERT(Laux[4*k+i] == get_quant_bucket(id, xval[4*k+i]));
+                        printf("id = %f, xval = %f, exact = %f, rounded = %d\n", (double)id, (double)xval[4*k+i], (double)(0.5f*(id*xval[4*k+i]-1)), l);
+                        l = MAX(0, MIN(kMaxQ-1, l));
+                        GGML_ASSERT(l ==Laux[4*k+i]);
+                        */
                     }
                     uint16_t u = 0;
                     for (int i = 0; i < 4; ++i) u |= (Laux[4*k+i] << 4*i);
@@ -11130,11 +11160,14 @@ static void quantize_row_iq3_s_impl(int block_size, const float * restrict x, vo
                     if (is_on_grid[k]) continue;
                     uint16_t u = 0;
                     for (int i = 0; i < 4; ++i) {
+                        int l_new = get_quant_bucket(id, xval[4*k+i], kround_lookup_q3xs);
+                        /*
                         int l = nearest_int(0.5f*(id*xval[4*k+i]-1));
                         l = MAX(0, MIN(kMaxQ-1, l));
                         
-                        GGML_ASSERT(l == get_quant_bucket(id, xval[4*k+i]));
-                        u |= (l << 4*i);
+                        
+                        GGML_ASSERT(l == l_new);*/
+                        u |= (l_new << 4*i);
                     }
                     int grid_index = kmap_q3xs[u];
                     if (grid_index < 0) {
